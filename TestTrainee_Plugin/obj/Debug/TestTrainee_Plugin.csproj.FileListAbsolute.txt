@@ -1,0 +1,11 @@
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\bin\Debug\TestTrainee_Plugin.dll
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\bin\Debug\TestTrainee_Plugin.pdb
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\bin\Debug\Microsoft.Crm.Sdk.Proxy.dll
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\bin\Debug\microsoft.identitymodel.dll
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\bin\Debug\Microsoft.Xrm.Sdk.dll
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\bin\Debug\Microsoft.Crm.Sdk.Proxy.xml
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\obj\Debug\TestTrainee_Plugin.csproj.AssemblyReference.cache
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\obj\Debug\TestTrainee_Plugin.csproj.CoreCompileInputs.cache
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\obj\Debug\TestTrainee_Plugin.csproj.CopyComplete
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\obj\Debug\TestTrainee_Plugin.dll
+C:\Users\matia\source\repos\TestTrainee_Plugin\TestTrainee_Plugin\obj\Debug\TestTrainee_Plugin.pdb
