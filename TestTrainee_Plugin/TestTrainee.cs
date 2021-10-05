@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 
 namespace TestTrainee_Plugin
 {
@@ -12,70 +13,45 @@ namespace TestTrainee_Plugin
     {
         public void Execute(IServiceProvider serviceProvider)
         {
-            //data
+            //ITracingService tracingService =
+            //(ITracingService)serviceProvider.GetService(typeof(ITracingService));
 
-            // Obtenga el servicio de rastreo
-            ITracingService tracingService =
-            (ITracingService)serviceProvider.GetService(typeof(ITracingService));
-
-            // Obtenga el contexto de ejecución del proveedor de servicios.
             IPluginExecutionContext context = (IPluginExecutionContext)
                 serviceProvider.GetService(typeof(IPluginExecutionContext));
 
-            // La colección InputParameters contiene todos los datos
-            // pasados en la solicitud de mensaje.  
-            if (context.InputParameters.Contains("Target") &&
-            context.InputParameters["Target"] is Entity)
+            Entity entity = (Entity)context.InputParameters["Target"];
+
+            if (entity.Contains("ms_departamento"))
             {
-                // Obtenga la entidad de destino de los parámetros de entrada. 
-                tracingService.Trace("Obtener la entidad");
-                Entity entity = (Entity)context.InputParameters["Target"];
+                IOrganizationServiceFactory serviceFactory = 
+                    (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
+                IOrganizationService service = serviceFactory.CreateOrganizationService(context.UserId);
 
-                // Obtenga la referencia de servicio de la organización
-                // que necesitará para las llamadas de servicio web.  
-                IOrganizationServiceFactory serviceFactory =
-                (IOrganizationServiceFactory)serviceProvider.GetService(
-                    typeof(IOrganizationServiceFactory)
-                );
-                IOrganizationService service = 
-                    serviceFactory.CreateOrganizationService(context.UserId);
-
-                try
+                string fetchXml =
+                @"<fetch version=""1.0"" output-format=""xml - platform"" mapping=""logical"" distinct=""false""><entity name = ""ms_reserva"" >
+                    < attribute name = ""ms_reservaid"" />
+                    < attribute name = ""ms_reserva"" />
+                    < attribute name = ""createdon"" />
+                    < order attribute = ""ms_reserva"" descending = ""false"" />
+                    < filter type = ""and"" >
+                        < condition attribute = ""statecode"" operator= ""eq"" value = ""0"" />
+                        < condition attribute = ""ms_departamento"" operator= ""eq"" value = ""af361822-8111-ec11-b6e7-002248376565"" />
+                    </ filter >
+                    </ entity >
+                    </ fetch > 
+                ";
+                fetchXml = string.Format(fetchXml, entity.Id);
+                var qe = new FetchExpression(fetchXml);
+                var result = service.RetrieveMultiple(qe);
+                foreach (var e in result.Entities)
                 {
-                    // Cree una actividad de tarea para hacer un seguimiento con el cliente de la cuenta en 7 días. 
-                    Entity followup = new Entity("task");
-
-                    followup["subject"] = "Send e-mail to the new customer.";
-                    followup["description"] =
-                        "Follow up with the customer. Check if there are any new issues that need resolution.";
-                    followup["scheduledstart"] = DateTime.Now.AddDays(7);
-                    followup["scheduledend"] = DateTime.Now.AddDays(7);
-                    followup["category"] = context.PrimaryEntityName;
-
-                    if (context.OutputParameters.Contains("id"))
-                    {
-                        Guid regardingobjectid = new Guid(context.OutputParameters["id"].ToString());
-                        string regardingobjectidType = "account";
-
-                        followup["regardingobjectid"] =
-                        new EntityReference(regardingobjectidType, regardingobjectid);
-                    }
-
-                    tracingService.Trace("FollowupPlugin: Creating the task activity.");
-                    service.Create(followup);
-                }
-
-                catch (FaultException<OrganizationServiceFault> ex)
-                {
-                    throw new InvalidPluginExecutionException("An error occurred in FollowUpPlugin.", ex);
-                }
-
-                catch (Exception ex)
-                {
-                    tracingService.Trace("FollowUpPlugin: {0}", ex.ToString());
-                    throw;
+                    Entity updatedDepart = new Entity(e.LogicalName);
+                    updatedDepart.Id = e.Id;
+                    updatedDepart["ms_departamento"] = entity["ms_departamento"];
+                    service.Update(updatedDepart);
                 }
             }
+            
         }
     }
 }
